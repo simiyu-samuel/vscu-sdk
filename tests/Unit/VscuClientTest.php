@@ -46,3 +46,34 @@ it('posts sales invoices to the VSCU sales endpoint', function () {
             && $request['itemList'][0]['taxAmt'] === 34.48;
     });
 });
+
+it('returns a typed sales result dto', function () {
+    Http::fake([
+        'http://localhost:8088/trnsSales/saveSales' => Http::response([
+            'resultCd' => '000',
+            'resultMsg' => 'Successful',
+            'data' => [
+                'rcptNo' => 'RCPT-123',
+                'intrlData' => 'INTRL-ABC',
+                'rcptSign' => 'SIGN-XYZ',
+            ],
+        ], 200),
+    ]);
+
+    $client = new VscuClient();
+    $result = $client->saveSalesResult([
+        'invcNo' => 'INV-002',
+        'tpin' => 'P000000000A',
+        'custTpin' => 'P000000000B',
+        'rcptTyCd' => 'S',
+        'pmtTyCd' => '01',
+        'cfmDt' => '2024-01-15',
+        'salesDt' => '2024-01-15',
+        'totAmt' => 250.00,
+        'itemList' => [],
+    ]);
+
+    expect($result->isSuccessful())->toBeTrue()
+        ->and($result->rcptNo)->toBe('RCPT-123')
+        ->and($result->intrlData)->toBe('INTRL-ABC');
+});

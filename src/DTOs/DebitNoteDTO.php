@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SimiyuSamuel\VscuSdk\DTOs;
 
+use SimiyuSamuel\VscuSdk\Exceptions\VscuValidationException;
+
 final class DebitNoteDTO
 {
     /**
@@ -31,6 +33,8 @@ final class DebitNoteDTO
      */
     public static function make(array $data): self
     {
+        self::validate($data);
+
         $items = $data['itemList'] ?? $data['items'] ?? [];
         $items = array_map(
             fn (mixed $item) => $item instanceof InvoiceLineDTO ? $item : InvoiceLineDTO::make((array) $item),
@@ -86,5 +90,39 @@ final class DebitNoteDTO
             ],
             'itemList' => array_map(fn (InvoiceLineDTO $item) => $item->toPayload(), $this->itemList),
         ], static fn ($value) => $value !== null);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private static function validate(array $data): void
+    {
+        $required = [
+            ['debitNo', 'invcNo', 'debit_note_number'],
+            ['orgInvcNo', 'original_invoice_number'],
+            ['tpin', 'supplier_pin'],
+            ['custTpin', 'custTin', 'buyer_pin'],
+        ];
+
+        $missing = [];
+
+        foreach ($required as $group) {
+            $present = false;
+
+            foreach ($group as $key) {
+                if (array_key_exists($key, $data) && $data[$key] !== '' && $data[$key] !== null) {
+                    $present = true;
+                    break;
+                }
+            }
+
+            if (!$present) {
+                $missing[] = $group[0];
+            }
+        }
+
+        if (!empty($missing)) {
+            throw new VscuValidationException('Missing required DebitNoteDTO fields: ' . implode(', ', $missing));
+        }
     }
 }

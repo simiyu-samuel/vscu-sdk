@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use SimiyuSamuel\VscuSdk\DTOs\InvoiceDTO;
 use SimiyuSamuel\VscuSdk\DTOs\InvoiceLineDTO;
+use SimiyuSamuel\VscuSdk\Exceptions\VscuValidationException;
 
 it('serializes a full sales invoice payload', function () {
     $invoice = InvoiceDTO::make([
@@ -67,3 +68,12 @@ it('normalizes invoice line items to payload arrays', function () {
         'totAmt' => 250.00,
     ]);
 });
+
+it('throws when required invoice fields are missing', function () {
+    InvoiceDTO::make([
+        'tpin' => 'P000000000A',
+        'custTpin' => 'P000000000B',
+        'rcptTyCd' => 'S',
+        'pmtTyCd' => '01',
+    ]);
+})->throws(VscuValidationException::class);

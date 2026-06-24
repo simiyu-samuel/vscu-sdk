@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SimiyuSamuel\VscuSdk\DTOs;
 
+use SimiyuSamuel\VscuSdk\Exceptions\VscuValidationException;
+
 final class InvoiceLineDTO
 {
     public function __construct(
@@ -31,6 +33,8 @@ final class InvoiceLineDTO
      */
     public static function make(array $data): self
     {
+        self::validate($data);
+
         return new self(
             itemSeq: (int) ($data['itemSeq'] ?? $data['item_number'] ?? 1),
             itemCd: (string) ($data['itemCd'] ?? $data['item_code'] ?? ''),
@@ -76,5 +80,40 @@ final class InvoiceLineDTO
             'taxAmt' => $this->taxAmt,
             'totAmt' => $this->totAmt,
         ], static fn ($value) => $value !== null);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private static function validate(array $data): void
+    {
+        $required = [
+            ['itemSeq', 'item_number'],
+            ['itemCd', 'item_code'],
+            ['itemNm', 'item_name'],
+            ['qty', 'quantity'],
+            ['prc', 'unit_price'],
+        ];
+
+        $missing = [];
+
+        foreach ($required as $group) {
+            $present = false;
+
+            foreach ($group as $key) {
+                if (array_key_exists($key, $data) && $data[$key] !== '' && $data[$key] !== null) {
+                    $present = true;
+                    break;
+                }
+            }
+
+            if (!$present) {
+                $missing[] = $group[0];
+            }
+        }
+
+        if (!empty($missing)) {
+            throw new VscuValidationException('Missing required InvoiceLineDTO fields: ' . implode(', ', $missing));
+        }
     }
 }

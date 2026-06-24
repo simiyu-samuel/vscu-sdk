@@ -83,6 +83,26 @@ $response = $client->saveSales([
 ]);
 ```
 
+Typed result helpers are also available when you want a normalized SDK response:
+
+```php
+$result = $client->saveSalesResult([
+    'invcNo' => 'INV-001',
+    'tpin' => 'P000000000A',
+    'custTpin' => 'P000000000B',
+    'rcptTyCd' => 'S',
+    'pmtTyCd' => '01',
+    'cfmDt' => '2024-01-15',
+    'salesDt' => '2024-01-15',
+    'totAmt' => 250.00,
+    'itemList' => [],
+]);
+
+if ($result->isSuccessful()) {
+    echo $result->rcptNo;
+}
+```
+
 ```php
 use SimiyuSamuel\VscuSdk\DTOs\CreditNoteDTO;
 
