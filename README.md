@@ -22,3 +22,37 @@ Standalone PHP SDK for KRA VSCU invoice payloads.
 ## Status
 
 This package is being scaffolded in stages with clean git commits.
+
+## Quick Usage
+
+```php
+use SimiyuSamuel\VscuSdk\VscuClient;
+
+$client = new VscuClient(baseUrl: 'http://localhost:8088');
+
+$response = $client->saveSales([
+    'invcNo' => 'INV-001',
+    'tpin' => 'P000000000A',
+    'custTpin' => 'P000000000B',
+    'custNm' => 'Test Buyer',
+    'rcptTyCd' => 'S',
+    'pmtTyCd' => '01',
+    'cfmDt' => '2024-01-15',
+    'salesDt' => '2024-01-15',
+    'totAmt' => 250.00,
+    'totTaxblAmt' => 215.52,
+    'totTaxAmt' => 34.48,
+    'itemList' => [
+        [
+            'itemSeq' => 1,
+            'itemCd' => 'ITEM-001',
+            'itemNm' => 'Widget',
+            'qty' => 1,
+            'prc' => 250.00,
+            'taxblAmt' => 215.52,
+            'taxAmt' => 34.48,
+            'totAmt' => 250.00,
+        ],
+    ],
+]);
+```
