@@ -156,6 +156,20 @@ final class VscuClient
         return VscuResponseDTO::fromArray($this->saveStockMovement($payload)->json() ?? []);
     }
 
+    public function getStockMovements(string $tpin, string $bhfId, string $lastReqDt): Response
+    {
+        return $this->transport()->post('/stock/selectStockItems', [
+            'tpin' => $tpin,
+            'bhfId' => $bhfId,
+            'lastReqDt' => $lastReqDt,
+        ]);
+    }
+
+    public function getStockMovementsResult(string $tpin, string $bhfId, string $lastReqDt): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->getStockMovements($tpin, $bhfId, $lastReqDt)->json() ?? []);
+    }
+
     public function saveStockMaster(StockMasterDTO|array $payload): Response
     {
         $dto = $payload instanceof StockMasterDTO ? $payload : StockMasterDTO::make($payload);
@@ -166,5 +180,201 @@ final class VscuClient
     public function saveStockMasterResult(StockMasterDTO|array $payload): VscuResponseDTO
     {
         return VscuResponseDTO::fromArray($this->saveStockMaster($payload)->json() ?? []);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function saveItem(array $payload): Response
+    {
+        return $this->transport()->post('/items/saveItems', $payload);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function saveItemResult(array $payload): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->saveItem($payload)->json() ?? []);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function saveItemComposition(array $payload): Response
+    {
+        return $this->transport()->post('/items/saveItemComposition', $payload);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function saveItemCompositionResult(array $payload): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->saveItemComposition($payload)->json() ?? []);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function savePurchase(array $payload): Response
+    {
+        return $this->transport()->post('/trnsPurchase/savePurchases', $payload);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function savePurchaseResult(array $payload): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->savePurchase($payload)->json() ?? []);
+    }
+
+    public function getPurchaseTransactions(string $tpin, string $bhfId, string $lastReqDt): Response
+    {
+        return $this->transport()->post('/trnsPurchase/selectTrnsPurchaseSales', [
+            'tpin' => $tpin,
+            'bhfId' => $bhfId,
+            'lastReqDt' => $lastReqDt,
+        ]);
+    }
+
+    public function getPurchaseTransactionsResult(string $tpin, string $bhfId, string $lastReqDt): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->getPurchaseTransactions($tpin, $bhfId, $lastReqDt)->json() ?? []);
+    }
+
+    public function getImportedItems(string $tpin, string $bhfId, string $lastReqDt): Response
+    {
+        return $this->transport()->post('/imports/selectImportItems', [
+            'tpin' => $tpin,
+            'bhfId' => $bhfId,
+            'lastReqDt' => $lastReqDt,
+        ]);
+    }
+
+    public function getImportedItemsResult(string $tpin, string $bhfId, string $lastReqDt): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->getImportedItems($tpin, $bhfId, $lastReqDt)->json() ?? []);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function updateImportedItem(array $payload): Response
+    {
+        return $this->transport()->post('/imports/updateImportItems', $payload);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function updateImportedItemResult(array $payload): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->updateImportedItem($payload)->json() ?? []);
+    }
+
+    public function getBranches(string $tpin, string $bhfId, string $lastReqDt): Response
+    {
+        return $this->transport()->post('/branches/selectBranches', [
+            'tpin' => $tpin,
+            'bhfId' => $bhfId,
+            'lastReqDt' => $lastReqDt,
+        ]);
+    }
+
+    public function getBranchesResult(string $tpin, string $bhfId, string $lastReqDt): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->getBranches($tpin, $bhfId, $lastReqDt)->json() ?? []);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function saveBranchCustomer(array $payload): Response
+    {
+        return $this->transport()->post('/branches/saveBrancheCustomers', $payload);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function saveBranchCustomerResult(array $payload): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->saveBranchCustomer($payload)->json() ?? []);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function saveBranchUser(array $payload): Response
+    {
+        return $this->transport()->post('/branches/saveBrancheUsers', $payload);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function saveBranchUserResult(array $payload): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->saveBranchUser($payload)->json() ?? []);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function saveBranchInsurance(array $payload): Response
+    {
+        return $this->transport()->post('/branches/saveBrancheInsurances', $payload);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function saveBranchInsuranceResult(array $payload): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->saveBranchInsurance($payload)->json() ?? []);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function getNotices(array $payload): Response
+    {
+        return $this->transport()->post('/notices/selectNotices', $payload);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function getNoticesResult(array $payload): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->getNotices($payload)->json() ?? []);
+    }
+
+    public function getServerTime(): Response
+    {
+        return $this->transport()->get('/main/selectServerTime');
+    }
+
+    public function getServerTimeResult(): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->getServerTime()->json() ?? []);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function echoTest(array $payload): Response
+    {
+        return $this->transport()->post('/test/echoTest', $payload);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function echoTestResult(array $payload): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->echoTest($payload)->json() ?? []);
     }
 }

@@ -18,6 +18,11 @@ Standalone PHP SDK for KRA VSCU invoice payloads.
 - Item classifications
 - Customer lookup
 - Registered items
+- Purchases
+- Imports
+- Branch management helpers
+- Notices
+- Server time and test echo utilities
 - Sales invoices
 - Credit notes
 - Debit notes
@@ -134,6 +139,14 @@ $client->saveStockMaster([
     'tin' => 'P000000000A',
     'bhfId' => '00',
 ]);
+```
+
+Other jar helpers are also available for purchase, branch, import, notice, and utility endpoints:
+
+```php
+$client->savePurchase([...]);
+$client->getBranches('P000000000A', '00', '20240101000000');
+$client->getServerTime();
 ```
 
 Typed result helpers are also available when you want a normalized SDK response:

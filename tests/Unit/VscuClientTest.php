@@ -179,3 +179,74 @@ it('uses the jar customer lookup field name', function () {
             && $request['custmTin'] === 'P000000000B';
     });
 });
+
+it('posts purchases to the purchase endpoint', function () {
+    Http::fake([
+        'http://localhost:8088/trnsPurchase/savePurchases' => Http::response([
+            'resultCd' => '000',
+            'resultMsg' => 'Successful',
+            'data' => [],
+        ], 200),
+    ]);
+
+    $client = new VscuClient();
+    $client->savePurchase([
+        'purchaseNo' => 'PUR-001',
+        'tpin' => 'P000000000A',
+    ]);
+
+    Http::assertSentCount(1);
+    Http::assertSent(fn ($request) => $request->url() === 'http://localhost:8088/trnsPurchase/savePurchases');
+});
+
+it('posts item payloads to the item endpoint', function () {
+    Http::fake([
+        'http://localhost:8088/items/saveItems' => Http::response([
+            'resultCd' => '000',
+            'resultMsg' => 'Successful',
+            'data' => [],
+        ], 200),
+    ]);
+
+    $client = new VscuClient();
+    $client->saveItem([
+        'itemCd' => 'ITEM-001',
+        'itemNm' => 'Widget',
+    ]);
+
+    Http::assertSentCount(1);
+    Http::assertSent(fn ($request) => $request->url() === 'http://localhost:8088/items/saveItems');
+});
+
+it('fetches branches through the branch lookup endpoint', function () {
+    Http::fake([
+        'http://localhost:8088/branches/selectBranches' => Http::response([
+            'resultCd' => '000',
+            'resultMsg' => 'Successful',
+            'data' => [],
+        ], 200),
+    ]);
+
+    $client = new VscuClient();
+    $client->getBranches('P000000000A', '00', '20240101000000');
+
+    Http::assertSentCount(1);
+    Http::assertSent(fn ($request) => $request->url() === 'http://localhost:8088/branches/selectBranches');
+});
+
+it('fetches the server time using the jar utility endpoint', function () {
+    Http::fake([
+        'http://localhost:8088/main/selectServerTime' => Http::response([
+            'resultCd' => '000',
+            'resultMsg' => 'Successful',
+            'data' => [],
+        ], 200),
+    ]);
+
+    $client = new VscuClient();
+    $client->getServerTime();
+
+    Http::assertSentCount(1);
+    Http::assertSent(fn ($request) => $request->url() === 'http://localhost:8088/main/selectServerTime'
+        && $request->method() === 'GET');
+});
