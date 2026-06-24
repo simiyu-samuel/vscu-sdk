@@ -5,12 +5,12 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "SimiyuSamue\\VscuSdk\\": "src/"
+            "SimiyuSamuel\\VscuSdk\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "SimiyuSamue\\VscuSdk\\Tests\\": "tests/"
+            "SimiyuSamuel\\VscuSdk\\Tests\\": "tests/"
         }
     },
     "require": {
