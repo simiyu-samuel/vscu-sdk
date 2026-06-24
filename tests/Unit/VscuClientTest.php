@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Http;
+use SimiyuSamuel\VscuSdk\DTOs\BranchCustomerDTO;
+use SimiyuSamuel\VscuSdk\DTOs\ImportItemUpdateDTO;
+use SimiyuSamuel\VscuSdk\DTOs\PurchaseDTO;
 use SimiyuSamuel\VscuSdk\VscuClient;
 
 it('posts sales invoices to the VSCU sales endpoint', function () {
@@ -190,10 +193,18 @@ it('posts purchases to the purchase endpoint', function () {
     ]);
 
     $client = new VscuClient();
-    $client->savePurchase([
-        'purchaseNo' => 'PUR-001',
-        'tpin' => 'P000000000A',
-    ]);
+    $client->savePurchase(PurchaseDTO::make([
+        'invcNo' => 'PUR-001',
+        'spplrTin' => 'P000000000B',
+        'spplrNm' => 'Supplier One',
+        'spplrInvcNo' => 'SUP-INV-001',
+        'pchsTyCd' => 'N',
+        'rcptTyCd' => 'P',
+        'pchsDt' => '20250930',
+        'tin' => 'P000000000A',
+        'bhfId' => '00',
+        'itemList' => [],
+    ]));
 
     Http::assertSentCount(1);
     Http::assertSent(fn ($request) => $request->url() === 'http://localhost:8088/trnsPurchase/savePurchases');
@@ -249,4 +260,53 @@ it('fetches the server time using the jar utility endpoint', function () {
     Http::assertSentCount(1);
     Http::assertSent(fn ($request) => $request->url() === 'http://localhost:8088/main/selectServerTime'
         && $request->method() === 'GET');
+});
+
+it('posts typed import updates to the import endpoint', function () {
+    Http::fake([
+        'http://localhost:8088/imports/updateImportItems' => Http::response([
+            'resultCd' => '000',
+            'resultMsg' => 'Successful',
+            'data' => [],
+        ], 200),
+    ]);
+
+    $client = new VscuClient();
+    $client->updateImportedItem(ImportItemUpdateDTO::make([
+        'taskCd' => 'UPDATE',
+        'dclDe' => '20250930',
+        'itemSeq' => 1,
+        'hsCd' => '0101',
+        'itemCd' => 'ITEM-001',
+        'itemClsCd' => '10101501',
+        'imptItemSttsCd' => '3',
+        'tin' => 'P000000000A',
+        'bhfId' => '00',
+    ]));
+
+    Http::assertSentCount(1);
+    Http::assertSent(fn ($request) => $request->url() === 'http://localhost:8088/imports/updateImportItems');
+});
+
+it('posts typed branch customers to the branch customer endpoint', function () {
+    Http::fake([
+        'http://localhost:8088/branches/saveBrancheCustomers' => Http::response([
+            'resultCd' => '000',
+            'resultMsg' => 'Successful',
+            'data' => [],
+        ], 200),
+    ]);
+
+    $client = new VscuClient();
+    $client->saveBranchCustomer(BranchCustomerDTO::make([
+        'bhfId' => '00',
+        'custNo' => 'CUST-001',
+        'custTin' => 'P000000000B',
+        'custNm' => 'Branch Customer',
+        'useYn' => 'Y',
+        'tin' => 'P000000000A',
+    ]));
+
+    Http::assertSentCount(1);
+    Http::assertSent(fn ($request) => $request->url() === 'http://localhost:8088/branches/saveBrancheCustomers');
 });

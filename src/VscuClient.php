@@ -7,9 +7,14 @@ namespace SimiyuSamuel\VscuSdk;
 use Illuminate\Http\Client\Response;
 use SimiyuSamuel\VscuSdk\Contracts\VscuTransport;
 use SimiyuSamuel\VscuSdk\DTOs\CreditNoteDTO;
+use SimiyuSamuel\VscuSdk\DTOs\BranchCustomerDTO;
+use SimiyuSamuel\VscuSdk\DTOs\BranchInsuranceDTO;
+use SimiyuSamuel\VscuSdk\DTOs\BranchUserDTO;
 use SimiyuSamuel\VscuSdk\DTOs\DeviceInitDTO;
 use SimiyuSamuel\VscuSdk\DTOs\DebitNoteDTO;
+use SimiyuSamuel\VscuSdk\DTOs\ImportItemUpdateDTO;
 use SimiyuSamuel\VscuSdk\DTOs\InvoiceDTO;
+use SimiyuSamuel\VscuSdk\DTOs\PurchaseDTO;
 use SimiyuSamuel\VscuSdk\DTOs\StockMasterDTO;
 use SimiyuSamuel\VscuSdk\DTOs\StockMovementDTO;
 use SimiyuSamuel\VscuSdk\DTOs\VscuResponseDTO;
@@ -217,15 +222,17 @@ final class VscuClient
     /**
      * @param array<string, mixed> $payload
      */
-    public function savePurchase(array $payload): Response
+    public function savePurchase(PurchaseDTO|array $payload): Response
     {
-        return $this->transport()->post('/trnsPurchase/savePurchases', $payload);
+        $dto = $payload instanceof PurchaseDTO ? $payload : PurchaseDTO::make($payload);
+
+        return $this->transport()->post('/trnsPurchase/savePurchases', $dto->toPayload());
     }
 
     /**
      * @param array<string, mixed> $payload
      */
-    public function savePurchaseResult(array $payload): VscuResponseDTO
+    public function savePurchaseResult(PurchaseDTO|array $payload): VscuResponseDTO
     {
         return VscuResponseDTO::fromArray($this->savePurchase($payload)->json() ?? []);
     }
@@ -261,15 +268,17 @@ final class VscuClient
     /**
      * @param array<string, mixed> $payload
      */
-    public function updateImportedItem(array $payload): Response
+    public function updateImportedItem(ImportItemUpdateDTO|array $payload): Response
     {
-        return $this->transport()->post('/imports/updateImportItems', $payload);
+        $dto = $payload instanceof ImportItemUpdateDTO ? $payload : ImportItemUpdateDTO::make($payload);
+
+        return $this->transport()->post('/imports/updateImportItems', $dto->toPayload());
     }
 
     /**
      * @param array<string, mixed> $payload
      */
-    public function updateImportedItemResult(array $payload): VscuResponseDTO
+    public function updateImportedItemResult(ImportItemUpdateDTO|array $payload): VscuResponseDTO
     {
         return VscuResponseDTO::fromArray($this->updateImportedItem($payload)->json() ?? []);
     }
@@ -291,15 +300,17 @@ final class VscuClient
     /**
      * @param array<string, mixed> $payload
      */
-    public function saveBranchCustomer(array $payload): Response
+    public function saveBranchCustomer(BranchCustomerDTO|array $payload): Response
     {
-        return $this->transport()->post('/branches/saveBrancheCustomers', $payload);
+        $dto = $payload instanceof BranchCustomerDTO ? $payload : BranchCustomerDTO::make($payload);
+
+        return $this->transport()->post('/branches/saveBrancheCustomers', $dto->toPayload());
     }
 
     /**
      * @param array<string, mixed> $payload
      */
-    public function saveBranchCustomerResult(array $payload): VscuResponseDTO
+    public function saveBranchCustomerResult(BranchCustomerDTO|array $payload): VscuResponseDTO
     {
         return VscuResponseDTO::fromArray($this->saveBranchCustomer($payload)->json() ?? []);
     }
@@ -307,15 +318,17 @@ final class VscuClient
     /**
      * @param array<string, mixed> $payload
      */
-    public function saveBranchUser(array $payload): Response
+    public function saveBranchUser(BranchUserDTO|array $payload): Response
     {
-        return $this->transport()->post('/branches/saveBrancheUsers', $payload);
+        $dto = $payload instanceof BranchUserDTO ? $payload : BranchUserDTO::make($payload);
+
+        return $this->transport()->post('/branches/saveBrancheUsers', $dto->toPayload());
     }
 
     /**
      * @param array<string, mixed> $payload
      */
-    public function saveBranchUserResult(array $payload): VscuResponseDTO
+    public function saveBranchUserResult(BranchUserDTO|array $payload): VscuResponseDTO
     {
         return VscuResponseDTO::fromArray($this->saveBranchUser($payload)->json() ?? []);
     }
@@ -323,15 +336,17 @@ final class VscuClient
     /**
      * @param array<string, mixed> $payload
      */
-    public function saveBranchInsurance(array $payload): Response
+    public function saveBranchInsurance(BranchInsuranceDTO|array $payload): Response
     {
-        return $this->transport()->post('/branches/saveBrancheInsurances', $payload);
+        $dto = $payload instanceof BranchInsuranceDTO ? $payload : BranchInsuranceDTO::make($payload);
+
+        return $this->transport()->post('/branches/saveBrancheInsurances', $dto->toPayload());
     }
 
     /**
      * @param array<string, mixed> $payload
      */
-    public function saveBranchInsuranceResult(array $payload): VscuResponseDTO
+    public function saveBranchInsuranceResult(BranchInsuranceDTO|array $payload): VscuResponseDTO
     {
         return VscuResponseDTO::fromArray($this->saveBranchInsurance($payload)->json() ?? []);
     }

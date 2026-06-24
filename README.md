@@ -141,6 +141,35 @@ $client->saveStockMaster([
 ]);
 ```
 
+Typed helpers are available for the new write-side payloads too:
+
+```php
+use SimiyuSamuel\VscuSdk\DTOs\PurchaseDTO;
+use SimiyuSamuel\VscuSdk\DTOs\BranchCustomerDTO;
+
+$client->savePurchase(PurchaseDTO::make([
+    'invcNo' => 'PUR-001',
+    'spplrTin' => 'P000000000B',
+    'spplrNm' => 'Supplier One',
+    'spplrInvcNo' => 'SUP-INV-001',
+    'pchsTyCd' => 'N',
+    'rcptTyCd' => 'P',
+    'pchsDt' => '20250930',
+    'tin' => 'P000000000A',
+    'bhfId' => '00',
+    'itemList' => [],
+]));
+
+$client->saveBranchCustomer(BranchCustomerDTO::make([
+    'bhfId' => '00',
+    'custNo' => 'CUST-001',
+    'custTin' => 'P000000000B',
+    'custNm' => 'Branch Customer',
+    'useYn' => 'Y',
+    'tin' => 'P000000000A',
+]));
+```
+
 Other jar helpers are also available for purchase, branch, import, notice, and utility endpoints:
 
 ```php
