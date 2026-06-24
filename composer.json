@@ -26,6 +26,16 @@
     "scripts": {
         "test": "./vendor/bin/pest"
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "SimiyuSamuel\\VscuSdk\\VscuServiceProvider"
+            ],
+            "aliases": {
+                "Vscu": "SimiyuSamuel\\VscuSdk\\Facades\\Vscu"
+            }
+        }
+    },
     "minimum-stability": "stable",
     "prefer-stable": true
 }

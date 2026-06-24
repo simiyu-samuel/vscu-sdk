@@ -23,6 +23,32 @@ Standalone PHP SDK for KRA VSCU invoice payloads.
 
 This package is being scaffolded in stages with clean git commits.
 
+## Laravel Integration
+
+Publish the config file:
+
+```bash
+php artisan vendor:publish --tag=vscu-config
+```
+
+Then use the facade:
+
+```php
+use Vscu;
+
+Vscu::saveSales([
+    'invcNo' => 'INV-001',
+    'tpin' => 'P000000000A',
+    'custTpin' => 'P000000000B',
+    'rcptTyCd' => 'S',
+    'pmtTyCd' => '01',
+    'cfmDt' => '2024-01-15',
+    'salesDt' => '2024-01-15',
+    'totAmt' => 250.00,
+    'itemList' => [],
+]);
+```
+
 ## Quick Usage
 
 ```php
