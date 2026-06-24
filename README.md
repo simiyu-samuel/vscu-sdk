@@ -56,3 +56,20 @@ $response = $client->saveSales([
     ],
 ]);
 ```
+
+```php
+use SimiyuSamuel\VscuSdk\DTOs\CreditNoteDTO;
+
+$credit = CreditNoteDTO::make([
+    'creditNo' => 'CN-001',
+    'orgInvcNo' => 'INV-001',
+    'tpin' => 'P000000000A',
+    'custTpin' => 'P000000000B',
+    'cfmDt' => '2024-01-15',
+    'salesDt' => '2024-01-15',
+    'totAmt' => 250.00,
+    'totTaxblAmt' => 215.52,
+    'totTaxAmt' => 34.48,
+    'itemList' => [],
+]);
+```

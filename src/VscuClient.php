@@ -6,7 +6,9 @@ namespace SimiyuSamuel\VscuSdk;
 
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use SimiyuSamuel\VscuSdk\DTOs\CreditNoteDTO;
 use SimiyuSamuel\VscuSdk\DTOs\DeviceInitDTO;
+use SimiyuSamuel\VscuSdk\DTOs\DebitNoteDTO;
 use SimiyuSamuel\VscuSdk\DTOs\InvoiceDTO;
 use SimiyuSamuel\VscuSdk\Support\PayloadFormatter;
 
@@ -31,5 +33,21 @@ final class VscuClient
 
         return Http::timeout($this->timeout)
             ->post($this->baseUrl . '/trnsSales/saveSales', PayloadFormatter::format($dto->toPayload()));
+    }
+
+    public function saveCreditNote(CreditNoteDTO|array $payload): Response
+    {
+        $dto = $payload instanceof CreditNoteDTO ? $payload : CreditNoteDTO::make($payload);
+
+        return Http::timeout($this->timeout)
+            ->post($this->baseUrl . '/trnsSales/saveSales', PayloadFormatter::format($dto->toInvoicePayload()));
+    }
+
+    public function saveDebitNote(DebitNoteDTO|array $payload): Response
+    {
+        $dto = $payload instanceof DebitNoteDTO ? $payload : DebitNoteDTO::make($payload);
+
+        return Http::timeout($this->timeout)
+            ->post($this->baseUrl . '/trnsSales/saveSales', PayloadFormatter::format($dto->toInvoicePayload()));
     }
 }
