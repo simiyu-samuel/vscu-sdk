@@ -12,6 +12,10 @@ Standalone PHP SDK for KRA VSCU invoice payloads.
 ## Planned Scope
 
 - Device initialization
+- Codes and lookups
+- Item classifications
+- Customer lookup
+- Registered items
 - Sales invoices
 - Credit notes
 - Debit notes

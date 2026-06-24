@@ -77,3 +77,27 @@ it('returns a typed sales result dto', function () {
         ->and($result->rcptNo)->toBe('RCPT-123')
         ->and($result->intrlData)->toBe('INTRL-ABC');
 });
+
+it('fetches codes through the lookup endpoint', function () {
+    Http::fake([
+        'http://localhost:8088/code/selectCodes*' => Http::response([
+            'resultCd' => '000',
+            'resultMsg' => 'Successful',
+            'data' => [
+                'codeList' => [],
+            ],
+        ], 200),
+    ]);
+
+    $client = new VscuClient();
+    $result = $client->getCodesResult('P000000000A', '00', '20240101000000');
+
+    expect($result->isSuccessful())->toBeTrue();
+
+    Http::assertSent(function ($request) {
+        return str_contains($request->url(), '/code/selectCodes')
+            && $request['tpin'] === 'P000000000A'
+            && $request['bhfId'] === '00'
+            && $request['lastReqDt'] === '20240101000000';
+    });
+});
