@@ -1,6 +1,6 @@
 {
     "name": "simiyu-samuel/vscu-sdk",
-    "description": "Standalone PHP SDK for KRA VSCU invoice payloads and requests.",
+    "description": "Laravel-ready PHP SDK for KRA VSCU jar payloads, sales, stock, purchase, and lookup flows.",
     "type": "library",
     "license": "MIT",
     "autoload": {
