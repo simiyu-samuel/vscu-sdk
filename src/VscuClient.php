@@ -5,44 +5,46 @@ declare(strict_types=1);
 namespace SimiyuSamuel\VscuSdk;
 
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Http;
+use SimiyuSamuel\VscuSdk\Contracts\VscuTransport;
 use SimiyuSamuel\VscuSdk\DTOs\CreditNoteDTO;
 use SimiyuSamuel\VscuSdk\DTOs\DeviceInitDTO;
 use SimiyuSamuel\VscuSdk\DTOs\DebitNoteDTO;
 use SimiyuSamuel\VscuSdk\DTOs\InvoiceDTO;
+use SimiyuSamuel\VscuSdk\DTOs\StockMasterDTO;
+use SimiyuSamuel\VscuSdk\DTOs\StockMovementDTO;
 use SimiyuSamuel\VscuSdk\DTOs\VscuResponseDTO;
-use SimiyuSamuel\VscuSdk\Support\PayloadFormatter;
+use SimiyuSamuel\VscuSdk\Transport\HttpVscuTransport;
 
 final class VscuClient
 {
+    private ?VscuTransport $transport = null;
+
     public function __construct(
         private readonly string $baseUrl = 'http://localhost:8088',
         private readonly int $timeout = 90,
-    ) {}
-
-    /**
-     * @param array<string, mixed> $payload
-     */
-    private function post(string $path, array $payload): Response
-    {
-        return Http::timeout($this->timeout)
-            ->post($this->baseUrl . $path, PayloadFormatter::format($payload));
+        /**
+         * @var array<string, string>
+         */
+        private readonly array $headers = [],
+        ?VscuTransport $transport = null,
+    ) {
+        $this->transport = $transport;
     }
 
-    /**
-     * @param array<string, mixed> $query
-     */
-    private function get(string $path, array $query = []): Response
+    private function transport(): VscuTransport
     {
-        return Http::timeout($this->timeout)
-            ->get($this->baseUrl . $path, $query);
+        return $this->transport ??= new HttpVscuTransport(
+            baseUrl: $this->baseUrl,
+            timeout: $this->timeout,
+            headers: $this->headers,
+        );
     }
 
     public function initializeDevice(DeviceInitDTO|array $payload): Response
     {
         $dto = $payload instanceof DeviceInitDTO ? $payload : DeviceInitDTO::make($payload);
 
-        return $this->post('/initializer/selectInitInfo', $dto->toPayload());
+        return $this->transport()->post('/initializer/selectInitInfo', $dto->toPayload());
     }
 
     public function initializeDeviceResult(DeviceInitDTO|array $payload): VscuResponseDTO
@@ -54,7 +56,7 @@ final class VscuClient
     {
         $dto = $payload instanceof InvoiceDTO ? $payload : InvoiceDTO::make($payload);
 
-        return $this->post('/trnsSales/saveSales', $dto->toPayload());
+        return $this->transport()->post('/trnsSales/saveSales', $dto->toPayload());
     }
 
     public function saveSalesResult(InvoiceDTO|array $payload): VscuResponseDTO
@@ -66,7 +68,7 @@ final class VscuClient
     {
         $dto = $payload instanceof CreditNoteDTO ? $payload : CreditNoteDTO::make($payload);
 
-        return $this->post('/trnsSales/saveSales', $dto->toInvoicePayload());
+        return $this->transport()->post('/trnsSales/saveSales', $dto->toInvoicePayload());
     }
 
     public function saveCreditNoteResult(CreditNoteDTO|array $payload): VscuResponseDTO
@@ -78,7 +80,7 @@ final class VscuClient
     {
         $dto = $payload instanceof DebitNoteDTO ? $payload : DebitNoteDTO::make($payload);
 
-        return $this->post('/trnsSales/saveSales', $dto->toInvoicePayload());
+        return $this->transport()->post('/trnsSales/saveSales', $dto->toInvoicePayload());
     }
 
     public function saveDebitNoteResult(DebitNoteDTO|array $payload): VscuResponseDTO
@@ -88,7 +90,7 @@ final class VscuClient
 
     public function getCodes(string $tpin, string $bhfId, string $lastReqDt): Response
     {
-        return $this->get('/code/selectCodes', [
+        return $this->transport()->post('/code/selectCodes', [
             'tpin' => $tpin,
             'bhfId' => $bhfId,
             'lastReqDt' => $lastReqDt,
@@ -102,7 +104,7 @@ final class VscuClient
 
     public function getItemClassifications(string $tpin, string $bhfId, string $lastReqDt): Response
     {
-        return $this->get('/itemClass/selectItemsClass', [
+        return $this->transport()->post('/itemClass/selectItemsClass', [
             'tpin' => $tpin,
             'bhfId' => $bhfId,
             'lastReqDt' => $lastReqDt,
@@ -116,10 +118,10 @@ final class VscuClient
 
     public function getCustomerByPin(string $tpin, string $bhfId, string $customerPin): Response
     {
-        return $this->get('/customers/selectCustomer', [
+        return $this->transport()->post('/customers/selectCustomer', [
             'tpin' => $tpin,
             'bhfId' => $bhfId,
-            'custTpin' => $customerPin,
+            'custmTin' => $customerPin,
         ]);
     }
 
@@ -130,7 +132,7 @@ final class VscuClient
 
     public function getItems(string $tpin, string $bhfId, string $lastReqDt): Response
     {
-        return $this->get('/items/selectItems', [
+        return $this->transport()->post('/items/selectItems', [
             'tpin' => $tpin,
             'bhfId' => $bhfId,
             'lastReqDt' => $lastReqDt,
@@ -140,5 +142,29 @@ final class VscuClient
     public function getItemsResult(string $tpin, string $bhfId, string $lastReqDt): VscuResponseDTO
     {
         return VscuResponseDTO::fromArray($this->getItems($tpin, $bhfId, $lastReqDt)->json() ?? []);
+    }
+
+    public function saveStockMovement(StockMovementDTO|array $payload): Response
+    {
+        $dto = $payload instanceof StockMovementDTO ? $payload : StockMovementDTO::make($payload);
+
+        return $this->transport()->post('/stock/saveStockItems', $dto->toPayload());
+    }
+
+    public function saveStockMovementResult(StockMovementDTO|array $payload): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->saveStockMovement($payload)->json() ?? []);
+    }
+
+    public function saveStockMaster(StockMasterDTO|array $payload): Response
+    {
+        $dto = $payload instanceof StockMasterDTO ? $payload : StockMasterDTO::make($payload);
+
+        return $this->transport()->post('/stockMaster/saveStockMaster', $dto->toPayload());
+    }
+
+    public function saveStockMasterResult(StockMasterDTO|array $payload): VscuResponseDTO
+    {
+        return VscuResponseDTO::fromArray($this->saveStockMaster($payload)->json() ?? []);
     }
 }

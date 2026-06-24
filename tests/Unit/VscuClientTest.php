@@ -80,7 +80,7 @@ it('returns a typed sales result dto', function () {
 
 it('fetches codes through the lookup endpoint', function () {
     Http::fake([
-        'http://localhost:8088/code/selectCodes*' => Http::response([
+        'http://localhost:8088/code/selectCodes' => Http::response([
             'resultCd' => '000',
             'resultMsg' => 'Successful',
             'data' => [
@@ -95,9 +95,87 @@ it('fetches codes through the lookup endpoint', function () {
     expect($result->isSuccessful())->toBeTrue();
 
     Http::assertSent(function ($request) {
-        return str_contains($request->url(), '/code/selectCodes')
+        return $request->url() === 'http://localhost:8088/code/selectCodes'
+            && $request->method() === 'POST'
             && $request['tpin'] === 'P000000000A'
             && $request['bhfId'] === '00'
             && $request['lastReqDt'] === '20240101000000';
+    });
+});
+
+it('posts stock movements to the stock endpoint', function () {
+    Http::fake([
+        'http://localhost:8088/stock/saveStockItems' => Http::response([
+            'resultCd' => '000',
+            'resultMsg' => 'Successful',
+            'data' => [],
+        ], 200),
+    ]);
+
+    $client = new VscuClient();
+    $client->saveStockMovement([
+        'sarNo' => 2,
+        'sarTyCd' => '02',
+        'ocrnDt' => '20250930',
+        'tin' => 'P000000000A',
+        'bhfId' => '00',
+        'itemList' => [
+            [
+                'itemSeq' => 1,
+                'itemCd' => 'ITEM-001',
+                'itemNm' => 'Widget',
+                'qty' => 20,
+                'prc' => 500,
+            ],
+        ],
+    ]);
+
+    Http::assertSentCount(1);
+    Http::assertSent(function ($request) {
+        return $request->url() === 'http://localhost:8088/stock/saveStockItems'
+            && $request->method() === 'POST';
+    });
+});
+
+it('posts stock master updates to the stock master endpoint', function () {
+    Http::fake([
+        'http://localhost:8088/stockMaster/saveStockMaster' => Http::response([
+            'resultCd' => '000',
+            'resultMsg' => 'Successful',
+            'data' => [],
+        ], 200),
+    ]);
+
+    $client = new VscuClient();
+    $client->saveStockMaster([
+        'itemCd' => 'ITEM-001',
+        'rsdQty' => 25,
+        'tin' => 'P000000000A',
+        'bhfId' => '00',
+    ]);
+
+    Http::assertSentCount(1);
+    Http::assertSent(function ($request) {
+        return $request->url() === 'http://localhost:8088/stockMaster/saveStockMaster'
+            && $request->method() === 'POST';
+    });
+});
+
+it('uses the jar customer lookup field name', function () {
+    Http::fake([
+        'http://localhost:8088/customers/selectCustomer' => Http::response([
+            'resultCd' => '000',
+            'resultMsg' => 'Successful',
+            'data' => [],
+        ], 200),
+    ]);
+
+    $client = new VscuClient();
+    $client->getCustomerByPin('P000000000A', '00', 'P000000000B');
+
+    Http::assertSent(function ($request) {
+        return $request->url() === 'http://localhost:8088/customers/selectCustomer'
+            && $request->method() === 'POST'
+            && $request['custmTin'] === 'P000000000B';
     });
 });

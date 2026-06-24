@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Illuminate\Http\Client\Response saveSales(array|\SimiyuSamuel\VscuSdk\DTOs\InvoiceDTO $payload)
  * @method static \Illuminate\Http\Client\Response saveCreditNote(array|\SimiyuSamuel\VscuSdk\DTOs\CreditNoteDTO $payload)
  * @method static \Illuminate\Http\Client\Response saveDebitNote(array|\SimiyuSamuel\VscuSdk\DTOs\DebitNoteDTO $payload)
+ * @method static \Illuminate\Http\Client\Response saveStockMovement(array|\SimiyuSamuel\VscuSdk\DTOs\StockMovementDTO $payload)
+ * @method static \Illuminate\Http\Client\Response saveStockMaster(array|\SimiyuSamuel\VscuSdk\DTOs\StockMasterDTO $payload)
  */
 final class Vscu extends Facade
 {

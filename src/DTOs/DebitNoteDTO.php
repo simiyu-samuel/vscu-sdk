@@ -53,7 +53,7 @@ final class DebitNoteDTO
             totAmt: (float) ($data['totAmt'] ?? $data['debit_amount'] ?? 0),
             totTaxblAmt: (float) ($data['totTaxblAmt'] ?? $data['taxable_amount'] ?? 0),
             totTaxAmt: (float) ($data['totTaxAmt'] ?? $data['vat_amount'] ?? 0),
-            curCd: (string) ($data['curCd'] ?? $data['currency'] ?? 'KES'),
+            curCd: self::normalizeCurrency((string) ($data['curCd'] ?? $data['currency'] ?? 'KES')),
             receipt: isset($data['receipt']) && is_array($data['receipt']) ? $data['receipt'] : null,
             itemList: $items,
         );
@@ -124,5 +124,14 @@ final class DebitNoteDTO
         if (!empty($missing)) {
             throw new VscuValidationException('Missing required DebitNoteDTO fields: ' . implode(', ', $missing));
         }
+
+        if ((string) ($data['curCd'] ?? $data['currency'] ?? 'KES') === '') {
+            throw new VscuValidationException('DebitNoteDTO curCd cannot be empty.');
+        }
+    }
+
+    private static function normalizeCurrency(string $currency): string
+    {
+        return strtoupper(trim($currency)) ?: 'KES';
     }
 }

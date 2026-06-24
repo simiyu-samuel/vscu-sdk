@@ -18,6 +18,7 @@ final class VscuServiceProvider extends ServiceProvider
             return new VscuClient(
                 baseUrl: (string) ($config['base_url'] ?? 'http://localhost:8088'),
                 timeout: (int) ($config['timeout'] ?? 90),
+                headers: is_array($config['headers'] ?? null) ? $config['headers'] : [],
             );
         });
 

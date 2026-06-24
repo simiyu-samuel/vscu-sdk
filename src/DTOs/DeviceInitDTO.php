@@ -55,6 +55,10 @@ final class DeviceInitDTO
             $missing[] = 'dvcSrlNo';
         }
 
+        if (!empty($data['bhfId']) && strlen((string) $data['bhfId']) > 2) {
+            throw new VscuValidationException('DeviceInitDTO bhfId should be a short branch code.');
+        }
+
         if (!empty($missing)) {
             throw new VscuValidationException('Missing required DeviceInitDTO fields: ' . implode(', ', $missing));
         }

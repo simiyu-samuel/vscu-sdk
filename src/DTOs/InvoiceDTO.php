@@ -100,7 +100,7 @@ final class InvoiceDTO
             totTaxAmt: (float) ($data['totTaxAmt'] ?? $data['taxAmt'] ?? $data['vatAmt'] ?? 0),
             totAmt: (float) ($data['totAmt'] ?? $data['total_amount'] ?? 0),
             prchrAcptcYn: (string) ($data['prchrAcptcYn'] ?? 'N'),
-            curCd: (string) ($data['curCd'] ?? $data['currency'] ?? 'KES'),
+            curCd: self::normalizeCurrency((string) ($data['curCd'] ?? $data['currency'] ?? 'KES')),
             orgInvcNo: $data['orgInvcNo'] ?? null,
             rfdRsnCd: $data['rfdRsnCd'] ?? null,
             receipt: isset($data['receipt']) && is_array($data['receipt']) ? $data['receipt'] : null,
@@ -202,5 +202,22 @@ final class InvoiceDTO
         if (!empty($missing)) {
             throw new VscuValidationException('Missing required InvoiceDTO fields: ' . implode(', ', $missing));
         }
+
+        $rcptTyCd = (string) ($data['rcptTyCd'] ?? $data['invoice_type'] ?? '');
+
+        if ($rcptTyCd !== '' && !in_array($rcptTyCd, ['S', 'R', 'D', 'P', 'C'], true)) {
+            throw new VscuValidationException('Invalid InvoiceDTO rcptTyCd value: ' . $rcptTyCd);
+        }
+
+        $currency = (string) ($data['curCd'] ?? $data['currency'] ?? 'KES');
+
+        if ($currency !== '' && strlen($currency) !== 3) {
+            throw new VscuValidationException('InvoiceDTO curCd must be a 3-letter currency code.');
+        }
+    }
+
+    private static function normalizeCurrency(string $currency): string
+    {
+        return strtoupper(trim($currency)) ?: 'KES';
     }
 }

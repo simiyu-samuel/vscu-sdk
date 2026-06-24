@@ -17,6 +17,7 @@ final class PayloadFormatter
             'taxAmtA', 'taxAmtB', 'taxAmtC', 'taxAmtD', 'taxAmtE',
             'taxblAmtA', 'taxblAmtB', 'taxblAmtC', 'taxblAmtD', 'taxblAmtE',
             'dcAmt', 'totDcAmt', 'prc', 'qty', 'pkg', 'taxRtA', 'taxRtB', 'taxRtC', 'taxRtD', 'taxRtE',
+            'totItemCnt', 'sarNo', 'orgSarNo', 'rsdQty', 'itemSeq',
         ];
 
         foreach ($payload as $key => $value) {

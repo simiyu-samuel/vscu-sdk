@@ -55,7 +55,7 @@ final class CreditNoteDTO
             totTaxblAmt: (float) ($data['totTaxblAmt'] ?? $data['taxable_amount'] ?? 0),
             totTaxAmt: (float) ($data['totTaxAmt'] ?? $data['vat_amount'] ?? 0),
             rfdRsnCd: (string) ($data['rfdRsnCd'] ?? $data['reason_code'] ?? '01'),
-            curCd: (string) ($data['curCd'] ?? $data['currency'] ?? 'KES'),
+            curCd: self::normalizeCurrency((string) ($data['curCd'] ?? $data['currency'] ?? 'KES')),
             receipt: isset($data['receipt']) && is_array($data['receipt']) ? $data['receipt'] : null,
             itemList: $items,
         );
@@ -127,5 +127,14 @@ final class CreditNoteDTO
         if (!empty($missing)) {
             throw new VscuValidationException('Missing required CreditNoteDTO fields: ' . implode(', ', $missing));
         }
+
+        if ((string) ($data['rfdRsnCd'] ?? $data['reason_code'] ?? '01') === '') {
+            throw new VscuValidationException('CreditNoteDTO rfdRsnCd cannot be empty.');
+        }
+    }
+
+    private static function normalizeCurrency(string $currency): string
+    {
+        return strtoupper(trim($currency)) ?: 'KES';
     }
 }

@@ -1,5 +1,6 @@
 vendor/
 composer.lock
+.temp/
 .DS_Store
 .idea/
 *.log

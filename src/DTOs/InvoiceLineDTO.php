@@ -35,24 +35,27 @@ final class InvoiceLineDTO
     {
         self::validate($data);
 
+        $qty = (float) ($data['qty'] ?? $data['quantity'] ?? 0);
+        $prc = (float) ($data['prc'] ?? $data['unit_price'] ?? 0);
+
         return new self(
             itemSeq: (int) ($data['itemSeq'] ?? $data['item_number'] ?? 1),
             itemCd: (string) ($data['itemCd'] ?? $data['item_code'] ?? ''),
             itemNm: (string) ($data['itemNm'] ?? $data['item_name'] ?? ''),
-            qty: (float) ($data['qty'] ?? $data['quantity'] ?? 0),
-            prc: (float) ($data['prc'] ?? $data['unit_price'] ?? 0),
+            qty: $qty,
+            prc: $prc,
             taxTyCd: (string) ($data['taxTyCd'] ?? $data['tax_type_code'] ?? 'A'),
             itemClsCd: $data['itemClsCd'] ?? $data['item_category'] ?? null,
             qtyUnitCd: $data['qtyUnitCd'] ?? $data['unit_of_measure'] ?? null,
             pkgUnitCd: $data['pkgUnitCd'] ?? null,
             pkg: (float) ($data['pkg'] ?? 1),
             bcd: $data['bcd'] ?? $data['barcode'] ?? null,
-            splyAmt: (float) ($data['splyAmt'] ?? 0),
+            splyAmt: (float) ($data['splyAmt'] ?? round($qty * $prc, 2)),
             dcRt: (float) ($data['dcRt'] ?? 0),
             dcAmt: (float) ($data['dcAmt'] ?? 0),
-            taxblAmt: (float) ($data['taxblAmt'] ?? 0),
+            taxblAmt: (float) ($data['taxblAmt'] ?? round($qty * $prc, 2)),
             taxAmt: (float) ($data['taxAmt'] ?? $data['vatAmt'] ?? 0),
-            totAmt: (float) ($data['totAmt'] ?? 0),
+            totAmt: (float) ($data['totAmt'] ?? round($qty * $prc, 2)),
         );
     }
 
@@ -114,6 +117,14 @@ final class InvoiceLineDTO
 
         if (!empty($missing)) {
             throw new VscuValidationException('Missing required InvoiceLineDTO fields: ' . implode(', ', $missing));
+        }
+
+        if ((float) ($data['qty'] ?? $data['quantity'] ?? 0) <= 0) {
+            throw new VscuValidationException('InvoiceLineDTO qty must be greater than zero.');
+        }
+
+        if ((float) ($data['prc'] ?? $data['unit_price'] ?? 0) < 0) {
+            throw new VscuValidationException('InvoiceLineDTO prc cannot be negative.');
         }
     }
 }

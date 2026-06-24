@@ -8,6 +8,8 @@ Standalone PHP SDK for KRA VSCU invoice payloads.
 - Serialize to KRA-ready payloads.
 - Keep the SDK focused on VSCU invoice flows.
 - Make sales and credit-note payloads easy to generate correctly.
+- Include the jar transport layer used to reach KRA.
+- Cover stock, stock master, and lookup flows too.
 
 ## Planned Scope
 
@@ -19,6 +21,8 @@ Standalone PHP SDK for KRA VSCU invoice payloads.
 - Sales invoices
 - Credit notes
 - Debit notes
+- Stock movements
+- Stock master updates
 - Receipt payloads
 - Payload validation
 - Request client for the jar/API layer
@@ -53,6 +57,19 @@ Vscu::saveSales([
 ]);
 ```
 
+You can also override jar headers in `config/vscu.php` when the jar expects auth or custom metadata:
+
+```php
+return [
+    'base_url' => env('VSCU_BASE_URL', 'http://localhost:8088'),
+    'timeout' => (int) env('VSCU_TIMEOUT', 90),
+    'headers' => [
+        'Accept' => 'application/json',
+        // 'Authorization' => 'Bearer your-token',
+    ],
+];
+```
+
 ## Quick Usage
 
 ```php
@@ -84,6 +101,38 @@ $response = $client->saveSales([
             'totAmt' => 250.00,
         ],
     ],
+]);
+```
+
+Stock movement example:
+
+```php
+$client->saveStockMovement([
+    'sarNo' => 2,
+    'sarTyCd' => '02',
+    'ocrnDt' => '20250930',
+    'tin' => 'P000000000A',
+    'bhfId' => '00',
+    'itemList' => [
+        [
+            'itemSeq' => 1,
+            'itemCd' => 'ITEM-001',
+            'itemNm' => 'Widget',
+            'qty' => 20,
+            'prc' => 500.00,
+        ],
+    ],
+]);
+```
+
+Stock master update example:
+
+```php
+$client->saveStockMaster([
+    'itemCd' => 'ITEM-001',
+    'rsdQty' => 25,
+    'tin' => 'P000000000A',
+    'bhfId' => '00',
 ]);
 ```
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    bootstrap="vendor/autoload.php"
+    cacheDirectory=".temp"
+    colors="true"
+    failOnWarning="true"
+    beStrictAboutCoverageMetadata="false"
+>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
